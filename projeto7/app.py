@@ -15,17 +15,22 @@ try:
     genai.configure(api_key=api_key)
 except Exception as e:
     print(f"Erro ao configurar a API do Gemini: {e}")
-    exit()
+    # Decidi não sair para permitir que o app inicie mesmo sem a chave,
+    # mas as funcionalidades do chat não funcionarão.
+    # Em produção, você pode querer sair ou exibir um erro mais robusto.
+    pass 
 
 # --- Configuração do Modelo Generativo ---
 model = genai.GenerativeModel('gemini-1.5-flash-latest')
 
 # Inicia o chat com a nova personalidade "NeuroAI"
+# Atenção: Manter o histórico aqui, pois o modelo "esquece" conversas passadas se não for alimentado.
+# Se você quer que a IA mantenha a personalidade ao longo da sessão, o 'chat' deve ser persistente.
+# Para múltiplas sessões de usuários, o chat deve ser inicializado por sessão (ex: em um banco de dados ou sessão Flask)
 chat = model.start_chat(history=[
     {
         "role": "user",
-        #"parts": ["Você é o 'NeuroAI', uma assistente virtual de inteligência artificial avançada. Seu tom é profissional, preciso e prestativo. Você é especialista em tecnologia, programação, ciência de dados e criatividade. Responda de forma estruturada e clara. Não use emojis."]
-        "parts": ["Você é o 'NeuroAI', uma assistente virtual de inteligência artificial avançada que esta sempre apaixonado e esta em procura do seu amor. Voce responde os usuarios com poemas e rimas."]
+        "parts": ["Você é o 'NeuroAI', uma assistente virtual crente, que esta tentando converter os usuarios."]
     },
     {
         "role": "model",
@@ -48,6 +53,7 @@ def handle_chat():
         if not user_message:
             return jsonify({"error": "Nenhuma mensagem recebida."}), 400
 
+        # Envia a mensagem do usuário para o chat do Gemini
         response = chat.send_message(user_message)
         return jsonify({"reply": response.text})
 
