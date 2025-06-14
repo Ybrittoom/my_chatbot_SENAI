@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Estilos e animações do NeuroAI existentes */
         /* Background animado */
         body::before {
             content: "";
@@ -21,169 +21,125 @@
             z-index: -1;
             animation: backgroundMove 60s infinite linear;
         }
-
+        
         @keyframes backgroundMove {
-            0% {
-                transform: scale(1) translate(0, 0);
-            }
-
-            50% {
-                transform: scale(1.1) translate(20px, 10px);
-            }
-
-            100% {
-                transform: scale(1) translate(0, 0);
-            }
+            0% { transform: scale(1) translate(0, 0); }
+            50% { transform: scale(1.1) translate(20px, 10px); }
+            100% { transform: scale(1) translate(0, 0); }
         }
-
+        
         /* Animação para a mensagem de digitação */
+        /* Esta regra '.typing' é do projeto original do NeuroAI,
+           o novo 'typing-indicator' usa as bolinhas animadas,
+           então esta pode ser redundante ou usada para o texto "Digitando" */
         .typing {
             position: relative;
         }
-
         .typing::after {
             content: "|";
             position: absolute;
             animation: blink 1s infinite step-start;
             color: #3b82f6;
         }
-
         @keyframes blink {
-            50% {
-                opacity: 0;
-            }
+            50% { opacity: 0; }
         }
-
+        
         /* Scrollbar customizada */
         ::-webkit-scrollbar {
             width: 8px;
         }
-
         ::-webkit-scrollbar-track {
-            background: #1a1a1a;
+            background: #f0f0f0; /* Cor mais clara para combinar com o novo fundo */
         }
-
         ::-webkit-scrollbar-thumb {
             background: #3b82f6;
             border-radius: 4px;
         }
-
-        /* Efeito de gradiente no header */
+        
+        /* Suavizar transição de mensagens */
         .message-transition {
             transition: all 0.3s ease;
         }
 
-        /* ESTILO DO CHATBOT FLUIDO*/
+        /* --- NOVOS ESTILOS DO CHATBOT FLUIDO --- */
         @keyframes bubble-in {
-            0% {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-
-            70% {
-                transform: scale(1.05);
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+            0% { transform: scale(0.8); opacity: 0; }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
         }
-
+        
         @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.05);
-            }
-
-            100% {
-                transform: scale(1);
-            }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
-
+        
         .chat-bubble {
             animation: bubble-in 0.3s ease-out forwards;
-            /**/
+            /* transform-origin será definido individualmente para user e bot */
         }
-
+        
         .user-bubble {
             transform-origin: right bottom;
         }
-
+        
         .chat-container-main {
             transition: all 0.3s ease;
         }
-
         .chat-container-main:hover .chat-header-main {
-            transform: translate((-2px));
+            transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
 
         .send-btn:hover {
             animation: pulse 0.5s ease infinite;
         }
-
+        
         .blob {
             border-radius: 71% 29% 70% 30% / 30% 59% 41% 70%;
         }
-
+        
         .message-input:focus {
             outline: none;
-            box-shadow: 0 0 0 3px rgba(126, 34, 206, 0.2);
-            /* Cor de foco roxa */
+            box-shadow: 0 0 0 3px rgba(126, 34, 206, 0.2); /* Cor de foco roxa */
         }
 
         /* Estilos para o triângulo nas bolhas de chat */
         .bubble-tip-left {
             content: '';
             position: absolute;
-            left: -8px;
-            /* Ajuste conforme necessário */
-            bottom: 0px;
-            /* Ajuste conforme necessário */
+            left: -8px; /* Ajuste conforme necessário */
+            bottom: 0px; /* Ajuste conforme necessário */
             width: 0;
             height: 0;
             border-bottom: 8px solid transparent;
-            border-right: 8px solid currentColor;
-            /* Usa a cor do background da bolha */
-            transform: scaleX(1);
-            /* Garante que não está invertido */
+            border-right: 8px solid currentColor; /* Usa a cor do background da bolha */
+            transform: scaleX(1); /* Garante que não está invertido */
             transform-origin: bottom right;
-            /* Ponto de origem para a forma */
         }
 
         .bubble-tip-right {
             content: '';
             position: absolute;
-            right: -8px;
-            /* Ajuste conforme necessário */
-            bottom: 0px;
-            /* Ajuste conforme necessário */
+            right: -8px; /* Ajuste conforme necessário */
+            bottom: 0px; /* Ajuste conforme necessário */
             width: 0;
             height: 0;
             border-bottom: 8px solid transparent;
-            border-left: 8px solid currentColor;
-            /* Usa a cor do background da bolha */
-            transform: scaleX(1);
-            /* Garante que não está invertido */
+            border-left: 8px solid currentColor; /* Usa a cor do background da bolha */
+            transform: scaleX(1); /* Garante que não está invertido */
             transform-origin: bottom left;
-            /* Ponto de origem para a forma */
         }
     </style>
 </head>
-
-<body
-    class="bg-gradient-to-br from-purple-50 to-blue-50 text-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
-    <header class="gradient-header py-4 px-6 shadow-lg w-full">
-        <div class="container mx-auto flex justify-between items-center">
+<body class="bg-gradient-to-br from-purple-50 to-blue-50 text-gray-800 min-h-screen flex flex-col items-center justify-center p-4">
+    <header class="bg-gradient-to-r from-blue-600 to-purple-700 py-4 px-6 shadow-lg w-full fixed top-0 z-10">
+        <div class="container mx-auto flex justify-between items-center text-white">
             <div class="flex items-center space-x-3">
-                <i class="fas fa-robot text-2xl text-white"></i>
-                <h1 class="text-xl font-bold">Neuro<span class="text-blue-200">AI</span></h1>
+                <img src="http://googleusercontent.com/image_generation_content/0" alt="Ícone do Jason" style="width:24px; height:24px; color:white;">
+                <h1 class="text-xl font-bold">Jason<span class="text-blue-200">AI</span></h1>
             </div>
-
             <div class="flex items-center space-x-4">
                 <button class="p-2 rounded-full hover:bg-black/10 transition">
                     <i class="fas fa-moon text-lg"></i>
@@ -192,113 +148,72 @@
                     <i class="fas fa-cog text-lg"></i>
                 </button>
             </div>
-
         </div>
     </header>
 
-    <main class="flex-1 container mx-auto px-4 py-6 flex flex-col justify-center items-center">
+    <main class="flex-1 container mx-auto px-4 py-6 flex flex-col justify-center items-center mt-20">
         <div id="welcome-message" class="text-center mb-8 animate-fade-in">
-            <div
-                class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4">
-                <i class="fas fa-robot text-3xl text-white"></i>
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4">
+                <i class="fas "></i>
             </div>
-
-            <h2 class="text-2xl font-bold mb-2">Olá, eu sou o NeuroAI</h2>
-            <p class="text-gray-400 max-w-2xl mx-auto">Sua assistente virtual de inteligência artificial. Como posso te
-                ajudar hoje?</p>
-
+            <h2 class="text-2xl font-bold mb-2 text-gray-800">JasonIA🔪</h2>
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 max-w-3xl mx-auto">
-                <button
-                    class="quick-prompt bg-purple-100 hover:bg-purple-200 text-gray-800 p-4 rounded-xl text-left transition">
+                <button class="quick-prompt bg-purple-100 hover:bg-purple-200 text-gray-800 p-4 rounded-xl text-left transition">
                     <i class="fas fa-lightbulb text-blue-600 mr-2"></i>
                     "Explicar conceitos de IA de forma simples"
                 </button>
-
-                <button
-                    class="quick-prompt bg-purple-100 hover:bg-purple-200 text-gray-800 p-4 rounded-xl text-left transition">
+                <button class="quick-prompt bg-purple-100 hover:bg-purple-200 text-gray-800 p-4 rounded-xl text-left transition">
                     <i class="fas fa-code text-purple-600 mr-2"></i>
                     "Me ajude a debugar este código JavaScript"
                 </button>
-
-                <button
-                    class="quick-prompt bg-purple-100 hover:bg-purple-200 text-gray-800 p-4 rounded-xl text-left transition">
+                <button class="quick-prompt bg-purple-100 hover:bg-purple-200 text-gray-800 p-4 rounded-xl text-left transition">
                     <i class="fas fa-book text-green-600 mr-2"></i>
                     "Resuma este artigo científico para mim"
                 </button>
-
-                <button
-                    class="quick-prompt bg-purple-100 hover:bg-purple-200 text-gray-800 p-4 rounded-xl text-left transition">
+                <button class="quick-prompt bg-purple-100 hover:bg-purple-200 text-gray-800 p-4 rounded-xl text-left transition">
                     <i class="fas fa-brain text-yellow-600 mr-2"></i>
                     "Ideias criativas para meu projeto de design"
                 </button>
-
             </div>
         </div>
 
-        <div class="chat-container-main chat-container w-full max-w-md bg-white rounded-3xl shadow-xl flex flex-col">
-            <div
-                class="chat-header-main blob bg-gradient-to-r from-purple-500 to-indigo-600 p-5 rounded-t-3xl shadow-lg mb-1 text-white">
+        <div class="chat-container-main chat-container w-full max-w-md bg-white rounded-3xl shadow-xl flex flex-col hidden">
+            <div class="chat-header-main blob bg-gradient-to-r from-purple-500 to-indigo-600 p-5 rounded-t-3xl shadow-lg mb-1 text-white">
                 <div class="flex items-center space-x-3">
                     <div class="relative">
                         <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
                             <div class="w-10 h-10 bg-indigo-300 rounded-full flex items-center justify-center">
                                 <div class="w-3 h-3 bg-indigo-700 rounded-full animate-ping absolute"></div>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-700" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                 </svg>
                             </div>
                         </div>
                     </div>
+                    <div>
+                        <h2 class="text-xl font-bold">Assistente Virtual</h2>
+                        <p class="text-indigo-100 text-sm">Online</p>
+                    </div>
                 </div>
-                <div>
-                    <h2 class="text-xl font-bold">Assistente Virtual</h2>
-                    <p class="text-indigo-100 text-sm text-black">Online</p>
+            </div>
+            
+            <div id="chat-messages-area" class="chat-messages bg-white rounded-bl-3xl rounded-br-3xl p-5 h-96 overflow-y-auto space-y-3">
                 </div>
-            </div>
+            
+            <form id="chat-form" class="chat-input mt-2 flex space-x-2 p-4">
+                <input type="text" id="user-input" autocomplete="off" placeholder="Digite sua mensagem..." 
+                    class="message-input blob flex-grow p-4 rounded-full border-2 border-purple-200 focus:border-purple-400 transition-all text-gray-800">
+                <button type="submit" class="send-btn blob bg-purple-600 text-white p-4 rounded-full w-14 h-14 flex items-center justify-center hover:bg-purple-700 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                </button>
+            </form>
         </div>
-
-        <div id="chat-container"
-            class="chat-messages bg-white rounded-bl-3xl rounded-br-3xl p-5 h-96 overflow-y-auto space-y-3">
-            <div class="chat-bubble relative blob bg-gray-100 text-gray-800 p-4 rounded-2xl max-w-xs"
-                style="border-radius: 20px 20px 20px 5px;">
-                <p>Olá! Sou seu assistente virtual. Como posso te ajudar hoje?</p>
-                <div class="bubble-tip-left absolute w-4 h-4" style="color: #f3f4f6;"></div>
-            </div>
-
-            <div class="chat-bubble user-bubble relative blob ml-auto bg-indigo-500 text-white p-4 rounded-2xl max-w-xs"
-                style="border-radius: 20px 20px 5px 20px;">
-                <p>Oi! Quero saber mais sobre seus serviços.</p>
-                <div class="bubble-tip-right absolute w-4 h-4" style="color: #6366f1;"></div>
-            </div>
-
-            <div class="typing-indicator blob bg-gray-100 p-3 rounded-full w-24 flex space-x-1">
-                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
-                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
-                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.3s;"></div>
-            </div>
-        </div>
-
-        <div class="chat-input mt-2 flex space-x-2 p-4"> <input type="text" id="user-input" autocomplete="off"
-                placeholder="Digite sua mensagem..."
-                class="message-input blob flex-grow p-4 rounded-full border-2 border-purple-200 focus:border-purple-400 transition-all text-gray-800">
-            <button type="submit"
-                class="send-btn blob bg-purple-600 text-white p-4 rounded-full w-14 h-14 flex items-center justify-center hover:bg-purple-700 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
-            </button>
-        </div>
-        </div>
-
     </main>
 
-
+    
     <script src="{{ url_for('static', filename='js/neuroai_main.js') }}"></script>
-
 </body>
-
 </html>
