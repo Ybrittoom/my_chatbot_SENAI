@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
     const chatForm = document.getElementById('chat-form');
     const userInput = document.getElementById('user-input');
-    const chatContainer = document.getElementById('chat-container');
+    const chatMessagesArea = document.getElementById('chat-messages-area'); // Changed ID here
     const welcomeMessage = document.getElementById('welcome-message');
+    const chatContainerMain = document.querySelector('.chat-container-main'); // Get the main chat container
 
-    // Função para os botões de prompt rápido
+    // Function for quick prompt buttons
     document.querySelectorAll('.quick-prompt').forEach(button => {
         button.addEventListener('click', function() {
             const promptText = this.textContent.match(/"(.*?)"/)[1];
@@ -13,28 +14,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Evento de envio do formulário
+    // Event listener for form submission
     chatForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         const message = userInput.value.trim();
         
         if (message) {
-            // Esconde a mensagem de boas-vindas se for a primeira mensagem
-            if (chatContainer.classList.contains('hidden')) {
-                chatContainer.classList.remove('hidden');
+            // Show the main chat container and hide the welcome message
+            if (chatContainerMain.classList.contains('hidden')) {
+                chatContainerMain.classList.remove('hidden');
                 welcomeMessage.classList.add('hidden');
             }
             
-            // Adiciona a mensagem do usuário na tela
+            // Add user message to the display
             addMessage(message, 'user');
             userInput.value = '';
             
-            // Adiciona o indicador de "digitando..."
+            // Add typing indicator
             addTypingIndicator();
             scrollToBottom();
             
-            // ############# LÓGICA MODIFICADA #############
-            // Comunica com o backend real em vez de simular uma resposta
             try {
                 const response = await fetch('/chat', {
                     method: 'POST',
@@ -43,73 +42,63 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Erro de rede: ${response.status}`);
+                    throw new Error(`Network error: ${response.status}`);
                 }
 
                 const data = await response.json();
-                removeTypingIndicator(); // Remove o "digitando..."
-                addMessage(data.reply, 'bot'); // Adiciona a resposta real do bot
+                removeTypingIndicator(); // Remove typing indicator
+                addMessage(data.reply, 'bot'); // Add bot's actual response
 
             } catch (error) {
-                console.error("Erro ao contatar o servidor:", error);
+                console.error("Error connecting to server:", error);
                 removeTypingIndicator();
                 addMessage("Desculpe, não consegui me conectar ao servidor. Verifique o console para mais detalhes.", 'bot');
             }
-            // ############# FIM DA LÓGICA MODIFICADA #############
         }
     });
     
-    // Função para adicionar mensagem ao chat
+    // Function to add message to the chat
     function addMessage(content, sender) {
         const messageDiv = document.createElement('div');
-        messageDiv.classList.add('message-transition', 'flex', 'w-full');
+        messageDiv.classList.add('chat-bubble', 'relative', 'flex', 'w-full', 'message-transition');
         
         // Sanitize content to prevent HTML injection
         const sanitizedContent = content.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
         if (sender === 'user') {
+            messageDiv.classList.add('user-bubble', 'ml-auto');
             messageDiv.innerHTML = `
-                <div class="ml-auto max-w-xs md:max-w-md lg:max-w-lg bg-blue-600 text-white px-4 py-3 rounded-lg rounded-tr-none">
-                    ${sanitizedContent}
-                </div>
-                <div class="flex-shrink-0 ml-2 mt-2">
-                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-                        <i class="fas fa-user text-sm"></i>
-                    </div>
+                <div class="blob bg-indigo-500 text-white p-4 rounded-2xl max-w-xs" style="border-radius: 20px 20px 5px 20px;">
+                    <p>${sanitizedContent}</p>
+                    <div class="bubble-tip-right absolute w-4 h-4" style="color: #6366f1;"></div>
                 </div>`;
         } else {
+            messageDiv.classList.add('mr-auto'); // For bot messages
             messageDiv.innerHTML = `
-                <div class="flex-shrink-0 mr-2 mt-2">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                        <i class="fas fa-robot text-sm"></i>
-                    </div>
-                </div>
-                <div class="max-w-xs md:max-w-md lg:max-w-lg bg-gray-800 px-4 py-3 rounded-lg rounded-tl-none">
-                    ${sanitizedContent}
+                <div class="blob bg-gray-100 text-gray-800 p-4 rounded-2xl max-w-xs" style="border-radius: 20px 20px 20px 5px;">
+                    <p>${sanitizedContent}</p>
+                    <div class="bubble-tip-left absolute w-4 h-4" style="color: #f3f4f6;"></div>
                 </div>`;
         }
-        chatContainer.appendChild(messageDiv);
+        chatMessagesArea.appendChild(messageDiv);
         scrollToBottom();
     }
     
-    // Função para adicionar o indicador de "digitando"
+    // Function to add typing indicator
     function addTypingIndicator() {
         const typingDiv = document.createElement('div');
         typingDiv.id = 'typing-indicator';
-        typingDiv.classList.add('flex', 'w-full', 'typing-indicator');
+        typingDiv.classList.add('flex', 'w-full', 'typing-indicator', 'relative'); // Added relative for tip positioning
         typingDiv.innerHTML = `
-            <div class="flex-shrink-0 mr-2 mt-2">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                    <i class="fas fa-robot text-sm"></i>
-                </div>
-            </div>
-            <div class="max-w-xs md:max-w-md lg:max-w-lg bg-gray-800 px-4 py-3 rounded-lg rounded-tl-none">
-                <div class="typing">Digitando</div>
-            </div>`;
-        chatContainer.appendChild(typingDiv);
+            <div class="blob bg-gray-100 p-3 rounded-full w-24 flex space-x-1 items-center justify-center">
+                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
+                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.3s;"></div>
+                <div class="bubble-tip-left absolute w-4 h-4" style="color: #f3f4f6; bottom: -2px; left: 8px;"></div> </div>`;
+        chatMessagesArea.appendChild(typingDiv);
     }
     
-    // Função para remover o indicador de "digitando"
+    // Function to remove typing indicator
     function removeTypingIndicator() {
         const typingIndicator = document.getElementById('typing-indicator');
         if (typingIndicator) {
@@ -117,9 +106,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Função para rolar para o final do chat
+    // Function to scroll to the bottom of the chat
     function scrollToBottom() {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+        chatMessagesArea.scrollTop = chatMessagesArea.scrollHeight;
     }
     
     userInput.focus();
