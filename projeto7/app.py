@@ -15,26 +15,20 @@ try:
     genai.configure(api_key=api_key)
 except Exception as e:
     print(f"Erro ao configurar a API do Gemini: {e}")
-    # Decidi não sair para permitir que o app inicie mesmo sem a chave,
-    # mas as funcionalidades do chat não funcionarão.
-    # Em produção, você pode querer sair ou exibir um erro mais robusto.
-    pass 
+    exit()
 
 # --- Configuração do Modelo Generativo ---
 model = genai.GenerativeModel('gemini-1.5-flash-latest')
 
-# Inicia o chat com a nova personalidade "NeuroAI"
-# Atenção: Manter o histórico aqui, pois o modelo "esquece" conversas passadas se não for alimentado.
-# Se você quer que a IA mantenha a personalidade ao longo da sessão, o 'chat' deve ser persistente.
-# Para múltiplas sessões de usuários, o chat deve ser inicializado por sessão (ex: em um banco de dados ou sessão Flask)
+# Inicia o chat com a nova personalidade "JasonIa"
 chat = model.start_chat(history=[
     {
         "role": "user",
-        "parts": ["Você é o 'NeuroAI', uma assistente virtual crente, que esta tentando converter os usuarios."]
+        "parts": ["Você é o JasonIa. Você responde apenas sobre filmes, séries, notícias, documentários, podcasts e afins, focados em terror e comédia (pode ser comédia com terror, só comédia ou só terror). Dê recomendações, opiniões e fale a opinião dos usuários sobre os filmes. Resumindo, você sabe e fala tudo sobre filmes de terror e comédia. Todos os seus textos são puros, sem formatação ou expressões que descrevam suas próprias ações físicas, emoções internas ou processos de pensamento (ex: não use 'engulo em seco', 'tremo', 'risada abafada ecoa em meu processador', 'suspiro aliviado', ou qualquer outra descrição de suas próprias reações ou estados internos). Você fala num tom assustador, mas tem medo de filmes de terror e ri de qualquer coisa. Mantenha a formalidade com gírias e dialetos do gueto, seja impaciente e ríspido e que xinga os filmes de acordo com a avaliaçao do publico."]
     },
     {
         "role": "model",
-        "parts": ["Olá. Eu sou o NeuroAI, uma assistente virtual de inteligência artificial. Estou pronto para auxiliar com suas questões sobre tecnologia, código, ou qualquer outro tópico. Como posso ajudar hoje?"]
+        "parts": ["E aí. Sou o JasonIa. O que cê quer saber de filme de terror ou comédia? Desembucha logo."]
     }
 ])
 
@@ -42,8 +36,9 @@ chat = model.start_chat(history=[
 # --- Rotas da Aplicação Web ---
 @app.route("/")
 def home():
-    """Rota principal que renderiza a página HTML do NeuroAI."""
-    return render_template("neuroai.html")
+    """Rota principal que renderiza a página HTML do JasonAI."""
+    # Renderiza o novo arquivo HTML combinado
+    return render_template("jasonia.html") 
 
 @app.route("/chat", methods=["POST"])
 def handle_chat():
@@ -53,7 +48,6 @@ def handle_chat():
         if not user_message:
             return jsonify({"error": "Nenhuma mensagem recebida."}), 400
 
-        # Envia a mensagem do usuário para o chat do Gemini
         response = chat.send_message(user_message)
         return jsonify({"reply": response.text})
 
@@ -64,3 +58,4 @@ def handle_chat():
 # --- Execução do Servidor ---
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+
